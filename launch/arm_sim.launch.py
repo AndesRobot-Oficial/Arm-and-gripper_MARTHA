@@ -1,7 +1,7 @@
 """MARTHA + ascensor + EB300 + pinza en Gazebo Classic (ROS 2 Humble).
 
 Lanzamiento deliberadamente fijo y minimo para el proyecto de manipulacion.
-Uso: ros2 launch martha_nav sim.launch.py
+Uso: ros2 launch martha_arm sim.launch.py
 
 - MARTHA con mecanum y torre corta, siempre.
 - Ascensor, brazo y pinza, siempre.
@@ -15,7 +15,12 @@ from pathlib import Path
 import xacro
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, LogInfo, RegisterEventHandler
+from launch.actions import (
+    AppendEnvironmentVariable,
+    ExecuteProcess,
+    LogInfo,
+    RegisterEventHandler,
+)
 from launch.event_handlers import OnProcessExit
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -58,7 +63,7 @@ def _start_next_on_success(process, next_action, label):
 
 
 def generate_launch_description():
-    share = Path(get_package_share_directory("martha_nav"))
+    share = Path(get_package_share_directory("martha_arm"))
     model_file = share / "urdf" / "martha.urdf.xacro"
     controllers_file = share / "config" / "controllers.yaml"
 
@@ -129,6 +134,11 @@ def generate_launch_description():
     ]
 
     return LaunchDescription([
+        AppendEnvironmentVariable(
+            name="GAZEBO_MODEL_PATH",
+            value=str(share.parent),
+            prepend=True,
+        ),
         gazebo_server,
         gazebo_gui,
         state_publisher,
