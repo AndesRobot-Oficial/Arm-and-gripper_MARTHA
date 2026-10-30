@@ -1,83 +1,62 @@
-# Guía de instalación y ejecución — MARTHA
 
-Esta guía explica cómo preparar el entorno de desarrollo y ejecutar la simulación de **MARTHA** con ROS 2 Humble. Incluye las soluciones a problemas de compilación encontrados durante la puesta en marcha.
+# MARTHA — Simulación e integración del brazo robótico
 
-> **Alcance:** procedimiento de instalación y lanzamiento. La carga correcta del brazo EB300, la garra y sus controladores debe validarse por separado en Gazebo y ROS 2.
+![ROS 2 Humble](https://img.shields.io/badge/ROS%202-Humble-22314E?logo=ros&logoColor=white)
+![Ubuntu 22.04](https://img.shields.io/badge/Ubuntu-22.04-E95420?logo=ubuntu&logoColor=white)
+![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-orange)
 
-## 1. Requisitos previos
+**MARTHA** es una plataforma robótica móvil utilizada en el proyecto **RoboCup 2027**. Este repositorio reúne el entorno de simulación y el trabajo de integración del **brazo EB300 y su garra**, tomando como referencia la implementación de **MILO**.
 
-- Ubuntu 22.04 LTS.
-- ROS 2 Humble instalado.
-- Herramientas `git`, `colcon` y `rosdep` disponibles.
-- Dependencias de simulación requeridas por el repositorio (Gazebo y paquetes ROS 2 asociados).
+> **Estado actual:** integración en desarrollo. La carga, el movimiento y el control del brazo y la garra todavía requieren validación reproducible en Gazebo y ROS 2. El alcance documentado es de **software y simulación**, no de hardware físico.
 
-Comprobar que ROS 2 está disponible:
+## Arquitectura prevista
 
-```bash
-source /opt/ros/humble/setup.bash
-ros2 pkg list
+```mermaid
+flowchart LR
+    A["MARTHA<br/>Base móvil"] --> B["Torre de soporte"]
+    B --> C["Brazo EB300"]
+    C --> D["Garra"]
 ```
 
-> `ros2 pkg list` permite comprobar que la CLI de ROS 2 está disponible.
+| Componente | Estado de documentación |
+|---|---|
+| Plataforma MARTHA con torre | Modelo y configuración de lanzamiento referenciados; ejecución actual por verificar. |
+| Brazo EB300 | Integración planteada mediante URDF/Xacro; control articular por validar. |
+| Garra | Integración y accionamiento en simulación pendientes de comprobar. |
+| `ros2_control` | Disponibilidad y respuesta de controladores por verificar. |
 
-## 2. Preparar el workspace
+## Requisitos
 
-En una instalación nueva, crea el workspace convencional:
+- **Ubuntu 22.04 LTS** y **ROS 2 Humble**.
+- `git`, `colcon` y `rosdep`.
+- Gazebo y las dependencias ROS 2 requeridas por los paquetes.
+
+La instalación base de ROS 2 se describe en la [documentación oficial de Humble](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html).
+
+## Instalación
+
+**1. Clonar el repositorio** dentro de `src` (una sola vez):
 
 ```bash
 mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
-```
-
-Clona **una sola vez** el repositorio dentro de `src`:
-
-```bash
 git clone https://github.com/Embedar/martha_nav_robotic_arm.git
 ```
 
-La estructura esperada es:
-
-```text
-~/ros2_ws/
-├── src/
-│   └── martha_nav_robotic_arm/
-├── build/      # Se crea al compilar
-├── install/    # Se crea al compilar
-└── log/        # Se crea al compilar
-```
-
-> Si ya tienes el repositorio en `~/ros2_ws/src/martha_nav_robotic_arm`, **no vuelvas a clonarlo**. Actualízalo mediante `git pull` solamente cuando quieras incorporar cambios remotos y hayas revisado tus modificaciones locales.
-
-## 3. Resolver dependencias y compilar
-
-Desde la raíz del workspace:
+**2. Instalar dependencias y compilar:**
 
 ```bash
 source /opt/ros/humble/setup.bash
 cd ~/ros2_ws
-
-# Instalar dependencias declaradas por los paquetes (requiere rosdep configurado)
+rosdep update
 rosdep install --from-paths src --ignore-src -r -y --rosdistro humble
-
-# Compilar
 colcon build --symlink-install
+source install/setup.bash
 ```
 
-Al finalizar, carga los paquetes de tu workspace:
+> `rosdep` debe estar inicializado en el equipo. Las dependencias específicas no declaradas por los paquetes pueden requerir instalación adicional.
 
-```bash
-source ~/ros2_ws/install/setup.bash
-```
-
-Verifica que ROS 2 reconoce el paquete:
-
-```bash
-ros2 pkg prefix martha_nav
-```
-
-> Si `rosdep` indica que falta un paquete o una clave de dependencia, revisa el mensaje de error antes de continuar. No todas las dependencias específicas de la simulación necesariamente están declaradas en el repositorio.
-
-## 4. Ejecutar la simulación
+## Ejecutar la simulación
 
 En una terminal con el entorno cargado:
 
@@ -91,135 +70,76 @@ ros2 launch martha_nav sim.launch.py \
   with_arm:=true
 ```
 
-Los argumentos usados en este proyecto son:
+| Argumento | Función |
+|---|---|
+| `robot:=martha_tower` | Selecciona la variante MARTHA con torre. |
+| `drive:=mecanum` | Selecciona la tracción mecanum. |
+| `with_arm:=true` | Solicita incluir el modelo del brazo. |
 
-| Argumento | Valor utilizado | Finalidad |
-|---|---|---|
-| `robot` | `martha_tower` | Seleccionar la variante de MARTHA con torre. |
-| `drive` | `mecanum` | Seleccionar el modelo de tracción mecanum. |
-| `with_arm` | `true` | Solicitar la inclusión del brazo en la simulación. |
-
-Para consultar los argumentos realmente admitidos por tu versión del archivo de lanzamiento:
+Para consultar los argumentos disponibles en la versión instalada:
 
 ```bash
 ros2 launch martha_nav sim.launch.py --show-args
 ```
 
-**Importante:** que el launch se ejecute no demuestra por sí solo que el brazo, la garra ni `ros2_control` estén operativos; comprueba su presencia y sus interfaces.
+## Verificación básica
 
-## 5. Comandos rápidos para sesiones posteriores
-
-Si el proyecto ya fue compilado y no cambiaste archivos que requieren nueva instalación o compilación:
-
-```bash
-source /opt/ros/humble/setup.bash
-source ~/ros2_ws/install/setup.bash
-ros2 launch martha_nav sim.launch.py \
-  robot:=martha_tower \
-  drive:=mecanum \
-  with_arm:=true
-```
-
-Si modificaste código o archivos instalados por el paquete:
-
-```bash
-source /opt/ros/humble/setup.bash
-cd ~/ros2_ws
-colcon build --symlink-install
-source install/setup.bash
-```
-
-## 6. Verificaciones básicas
-
-En una **segunda terminal**, carga primero ROS 2 y el workspace:
+En **otra terminal**:
 
 ```bash
 source /opt/ros/humble/setup.bash
 source ~/ros2_ws/install/setup.bash
 
+ros2 pkg prefix martha_nav
 ros2 node list
 ros2 topic list
 ros2 action list
 ```
 
-Si los controladores de `ros2_control` están presentes, inspecciónalos con:
+Si el gestor de controladores está activo, inspeccionar los controladores con:
 
 ```bash
 ros2 control list_controllers
 ```
 
-> Este último comando requiere que la interfaz de `controller_manager` correspondiente esté activa. Si no aparece, revisa la configuración de control del robot antes de asumir que los controladores funcionan.
+**Importante:** que Gazebo abra o que el robot aparezca no confirma por sí solo que las articulaciones ni la garra se puedan controlar.
 
-## 7. Solución de problemas frecuentes
+## Problemas frecuentes
 
-### A. `Duplicate package names not supported`
+<details>
+<summary><strong>Mostrar soluciones de compilación y entorno</strong></summary>
 
-**Causa:** `colcon` encontró más de una copia de un paquete con el mismo nombre. Por ejemplo:
-
-```text
-~/ros2_ws/martha_nav_robotic_arm/martha_nav_robotic_arm/
-~/ros2_ws/src/martha_nav_robotic_arm/
-```
-
-**Solución:** conserva una única copia activa dentro de `src`. Antes de mover nada, verifica las rutas:
+**`Duplicate package names not supported`**  
+Hay más de una copia de un paquete ROS 2. Localiza los `package.xml` y conserva una sola copia activa de cada paquete:
 
 ```bash
-cd ~/ros2_ws
-find . -name package.xml -not -path './build/*' -not -path './install/*'
+find ~/ros2_ws -name package.xml \
+  -not -path '*/build/*' -not -path '*/install/*'
 ```
 
-Si confirmas que la carpeta adicional es una copia duplicada y no contiene trabajo que necesites en este workspace, puedes apartarla sin borrarla:
+**`Package 'martha_nav' not found`**  
+Comprueba que compilaste y cargaste `~/ros2_ws/install/setup.bash` antes del lanzamiento.
 
-```bash
-mv ~/ros2_ws/martha_nav_robotic_arm ~/martha_nav_robotic_arm_backup
-```
-
-Este comando corresponde **solamente** al caso donde existe esa carpeta adicional. No lo ejecutes si no existe o si allí está tu única copia de trabajo.
-
-### B. `Package 'martha_nav' not found`
-
-**Causa probable:** no cargaste el entorno generado por `colcon`, o el paquete no se instaló correctamente.
-
-```bash
-source /opt/ros/humble/setup.bash
-source ~/ros2_ws/install/setup.bash
-ros2 pkg prefix martha_nav
-```
-
-Si aún no aparece, vuelve a compilar desde `~/ros2_ws` y revisa el resultado.
-
-### C. `can't copy .../build/martha_nav/launch/burger.launch.py`
-
-Este error apareció tras reorganizar un workspace con paquetes duplicados. Puede deberse a artefactos de compilación anteriores o a un problema de instalación del paquete.
-
-Primero limpia **solo los artefactos del paquete afectado**:
+**`can't copy .../build/martha_nav/launch/burger.launch.py`**  
+Si el archivo fuente existe y el problema se debe a artefactos previos, limpia únicamente la compilación del paquete afectado y recompila:
 
 ```bash
 cd ~/ros2_ws
 rm -rf build/martha_nav install/martha_nav
-source /opt/ros/humble/setup.bash
 colcon build --symlink-install --packages-select martha_nav
 source install/setup.bash
 ```
 
-Si el error persiste, comprueba que el archivo fuente existe y que la configuración de instalación lo referencia correctamente:
+Antes de borrar o mover directorios, comprueba que no contienen trabajo sin respaldar.
 
-```bash
-find ~/ros2_ws/src/martha_nav_robotic_arm -name 'burger.launch.py'
-find ~/ros2_ws/src/martha_nav_robotic_arm -name 'setup.py'
-```
+</details>
 
-No borres todo el workspace ni modifiques `setup.py` sin identificar primero la causa.
 
-## 8. Buenas prácticas
+## Referencias
 
-- Ejecuta `colcon build` desde la **raíz del workspace** (`~/ros2_ws`), no desde `src`.
-- Mantén una única copia activa de cada paquete ROS 2.
-- Tras compilar, ejecuta `source install/setup.bash` en la terminal donde vas a lanzar ROS 2.
-- Cuando abras una terminal nueva, vuelve a cargar los entornos.
-- Usa `--show-args` para confirmar las opciones de cada launch.
-- Valida por separado descripción URDF/Xacro, simulación física, articulaciones, controladores y garra.
+- [Arquitectura ROS 2 del equipo](https://alejapinzonf.github.io/Robot_arquitecture_ROS2/).
+- [Documentación de ROS 2 Humble](https://docs.ros.org/en/humble/).
 
 ---
 
-**Entorno de referencia:** Ubuntu 22.04 LTS · ROS 2 Humble · MARTHA · Gazebo.
+**Proyecto:** RoboCup 2027 · **Entorno de referencia:** Ubuntu 22.04 / ROS 2 Humble · **Actualización documental:** 2026-10-30.

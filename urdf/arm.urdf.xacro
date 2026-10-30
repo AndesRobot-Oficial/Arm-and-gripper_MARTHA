@@ -306,11 +306,11 @@
     </joint>
     <!-- Base del brazo -->
     <gazebo reference="arm_base_link_1">
-      <selfCollide>false</selfCollide>
+      <selfCollide>true</selfCollide>
     </gazebo>
     <!-- Articulación 1 -->
     <gazebo reference="link_1_1">
-      <selfCollide>false</selfCollide>
+      <selfCollide>true</selfCollide>
     </gazebo>
     <!-- Articulación 2 -->
     <gazebo reference="link_2_1">
@@ -318,27 +318,27 @@
     </gazebo>
     <!-- Articulación 3 -->
     <gazebo reference="link_3_1">
-      <selfCollide>false</selfCollide>
+      <selfCollide>true</selfCollide>
     </gazebo>
     <!-- Articulación 4 -->
     <gazebo reference="link_4_1">
-      <selfCollide>false</selfCollide>
+      <selfCollide>true</selfCollide>
     </gazebo>
     <!-- Articulación 5 -->
     <gazebo reference="link_5_1">
-      <selfCollide>false</selfCollide>
+      <selfCollide>true</selfCollide>
     </gazebo>
     <!-- Articulación 6 -->
     <gazebo reference="link_6_1">
-      <selfCollide>false</selfCollide>
+      <selfCollide>true</selfCollide>
     </gazebo>
     <!-- Dedo derecho de la garra -->
     <gazebo reference="right_finger_link_1">
-      <selfCollide>false</selfCollide>
+      <selfCollide>true</selfCollide>
     </gazebo>
     <!-- Dedo izquierdo de la garra -->
     <gazebo reference="left_finger_link_1">
-      <selfCollide>false</selfCollide>
+      <selfCollide>true</selfCollide>
     </gazebo>
   </xacro:macro>
 </robot>
