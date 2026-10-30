@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Ascensor y montaje de EB300 a MARTHA. Columna centrada en el eje de la base. -->
+  <xacro:macro name="elevator_box" params="name sx sy sz mass">
+      <link name="${name}">
+        <visual>
+          <geometry>
+            <box size="${sx} ${sy} ${sz}"/>
+          </geometry>
+          <material name="grey"/>
+        </visual>
+        <collision>
+          <geometry>
+            <box size="${sx} ${sy} ${sz}"/>
+          </geometry>
+        </collision>
+        <inertial>
+          <mass value="${mass}"/>
+          <inertia ixx="${mass*(sy*sy+sz*sz)/12}" iyy="${mass*(sx*sx+sz*sz)/12}" izz="${mass*(sx*sx+sy*sy)/12}" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+      </link>
+    </xacro:macro>
+    <xacro:macro name="martha_elevator_mount" params="parent_link:='base_link' column_x:=0.0 column_y:=0.0 column_length:=1.65 chassis_top:=0.1375">
+    <!-- Massas del elevador estimadas del modelo fuente; geometria de montaje propuesta, validar con CAD. -->
+    <!-- Cableado y actuador del elevador NO modelados; el par prismatico es solo simulacion. -->
+    <xacro:elevator_box name="milo_elevator_column" sx="0.05" sy="0.06" sz="${column_length}" mass="9.0"/>
+    <xacro:elevator_box name="milo_lift_carriage" sx="0.07" sy="0.09" sz="0.12" mass="1.5"/>
+    <xacro:elevator_box name="milo_lift_bracket" sx="0.17" sy="0.05" sz="0.055" mass="2.0"/>
+    <xacro:elevator_box name="milo_lift_platform" sx="0.22" sy="0.16" sz="0.012" mass="2.0"/>
+    <joint name="milo_column_mount" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="milo_elevator_column"/>
+      <origin xyz="${column_x} ${column_y} ${chassis_top + 0.005 + column_length/2}" rpy="0 0 0"/>
+    </joint>
+    <joint name="vertical_lift_joint" type="prismatic">
+      <parent link="milo_elevator_column"/>
+      <child link="milo_lift_carriage"/>
+      <origin xyz="0.080 0 ${-column_length/2 + 0.15}" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="0" upper="1.43" effort="500" velocity="0.15"/>
+      <dynamics damping="8" friction="3"/>
+    </joint>
+    <joint name="milo_carriage_to_bracket" type="fixed">
+      <parent link="milo_lift_carriage"/>
+      <child link="milo_lift_bracket"/>
+      <origin xyz="0.065 0 0" rpy="0 0 0"/>
+    </joint>
+    <joint name="milo_bracket_to_platform" type="fixed">
+      <parent link="milo_lift_bracket"/>
+      <child link="milo_lift_platform"/>
+      <origin xyz="0.040 0 0.0335" rpy="0 0 0"/>
+    </joint>
+    <joint name="milo_platform_to_arm" type="fixed">
+      <parent link="milo_lift_platform"/>
+      <child link="arm_base_link_1"/>
+      <origin xyz="0 0 0.006" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+</robot>
