@@ -22,7 +22,7 @@
          ros2_control (realistic, slower); "planar" replaces them with fixed wheels
          and gazebo_ros_planar_move (fast, no wheel dynamics). -->
     <xacro:arg name="drive" default="mecanum" />
-    <xacro:arg name="controllers_file" default="$(find martha_nav)/config/controllers.yaml" />
+    <xacro:arg name="controllers_file" default="$(find martha_arm)/config/controllers.yaml" />
     <xacro:arg name="lidar_samples" default="360" />
     <xacro:arg name="lidar_visualize" default="false" />
     <!-- tower - the aluminium tower on the chassis (ROBOTS['martha_tower']). "false" is the
@@ -32,9 +32,9 @@
     <xacro:arg name="with_arm" default="false" />
 
     <!-- Integracion, solo referencias a modulos del brazo. -->
-    <xacro:include filename="$(find martha_nav_robotic_arm)/urdf/arm.urdf.xacro" />
-    <xacro:include filename="$(find martha_nav_robotic_arm)/urdf/arm_mount.xacro" />
-    <xacro:include filename="$(find martha_nav_robotic_arm)/urdf/arm_control.xacro" />
+    <xacro:include filename="$(find martha_arm)/urdf/arm.urdf.xacro" />
+    <xacro:include filename="$(find martha_arm)/urdf/arm_mount.xacro" />
+    <xacro:include filename="$(find martha_arm)/urdf/arm_control.xacro" />
 
     <material name="black"><color rgba="0 0 0 1" /></material>
     <material name="grey"><color rgba="0.7 0.7 0.7 1" /></material>
@@ -190,7 +190,7 @@
 
     <!-- EB300 + elevador integrados, sin duplicar los enlaces de la plataforma. -->
     <xacro:if value="$(arg with_arm)">
-        <xacro:eb300_arm mesh_prefix="package://martha_nav_robotic_arm/meshes"
+        <xacro:eb300_arm mesh_prefix="package://martha_arm/meshes"
                          mesh_collisions="false" />
         <xacro:martha_elevator_mount parent_link="base_link"
                                      chassis_top="${height_0 + base_z/2}"
@@ -352,6 +352,7 @@
         <gazebo>
             <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
                 <parameters>$(arg controllers_file)</parameters>
+                <hold_joints>true</hold_joints>
             </plugin>
         </gazebo>
     </xacro:if>

@@ -1,5 +1,4 @@
 
-<?xml version="1.0" encoding="UTF-8"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- Interfaces ros2_control del brazo, elevador y gripper; no crea otro GazeboSystem. -->
   <xacro:macro name="arm_ros2_control_interfaces">

@@ -1,269 +1,353 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- Brazo EB300 y garra de MILO. Solo el manipulador. No incluye montajes ni controladores. -->
-  <xacro:macro name="eb300_arm" params="mesh_prefix:='package://martha_nav_robotic_arm/meshes' mesh_collisions:=false"><!-- Los STL originales usan milimetros; se conserva scale 0.001. --><material name="silver"><color rgba="0.75 0.75 0.78 1"/></material><link name="arm_base_link_1">
-  <inertial>
-    <origin xyz="4.338687172847182e-05 -0.00010909262325140833 0.017247921655867693" rpy="0 0 0"/>
-    <mass value="0.37739906837185044"/>
-    <inertia ixx="0.000595" iyy="0.000597" izz="0.001109" ixy="-1e-06" iyz="1e-06" ixz="-0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.0075 -0.0 -0.3175" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/arm_base_link_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="0 0 0.025"/><geometry><cylinder radius="0.05" length="0.07"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="-0.0075 -0.0 -0.3175" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/arm_base_link_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="link_1_1">
-  <inertial>
-    <origin xyz="-0.01769557352244753 -9.412818198760994e-06 0.06365159642189822" rpy="0 0 0"/>
-    <mass value="0.4335455797309874"/>
-    <inertia ixx="0.00108" iyy="0.001163" izz="0.00117" ixy="-0.0" iyz="0.0" ixz="-6e-05"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.0075 -0.0 -0.3545" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="-0.02 0 0.03"/><geometry><cylinder radius="0.055" length="0.085"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="-0.0075 -0.0 -0.3545" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="link_2_1">
-  <inertial>
-    <origin xyz="-0.06117091356976916 3.782915765605535e-05 0.1745118338257844" rpy="0 0 0"/>
-    <mass value="1.337954288424347"/>
-    <inertia ixx="0.026593" iyy="0.026587" izz="0.003039" ixy="-1e-06" iyz="9e-06" ixz="4e-05"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.0575 -0.0 -0.4105" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_2_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="-0.03 0 0.19"/><geometry><cylinder radius="0.045" length="0.32"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="0.0575 -0.0 -0.4105" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_2_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="link_3_1">
-  <inertial>
-    <origin xyz="0.060349833319215604 -7.17139814212156e-06 0.14917664928098273" rpy="0 0 0"/>
-    <mass value="0.7555537404726129"/>
-    <inertia ixx="0.014049" iyy="0.014249" izz="0.001262" ixy="0.0" iyz="1e-06" ixz="-0.00134"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.058577 -0.0 -0.760577" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_3_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="0.02 0 0.16"/><geometry><cylinder radius="0.043" length="0.295"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="0.058577 -0.0 -0.760577" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_3_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="link_4_1">
-  <inertial>
-    <origin xyz="-0.03758399899740222 -2.5185582457390994e-05 -0.009574293539618806" rpy="0 0 0"/>
-    <mass value="0.22273736647673667"/>
-    <inertia ixx="0.000311" iyy="0.000343" izz="0.000316" ixy="-0.0" iyz="-0.0" ixz="-2.6e-05"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.032577 -0.0 -1.084077" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_4_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="-0.02 0 0.015"/><geometry><cylinder radius="0.035" length="0.09"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="0.032577 -0.0 -1.084077" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_4_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="link_5_1">
-  <inertial>
-    <origin xyz="0.009039834811220046 -2.5441028107860334e-05 0.03771079682664524" rpy="0 0 0"/>
-    <mass value="0.22513890610008"/>
-    <inertia ixx="0.000319" iyy="0.000351" izz="0.000319" ixy="0.0" iyz="0.0" ixz="-2.4e-05"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.082077 -0.0 -1.124077" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_5_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="-0.02 0 0.025"/><geometry><cylinder radius="0.035" length="0.075"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="0.082077 -0.0 -1.124077" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_5_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="link_6_1">
-  <inertial>
-    <origin xyz="-0.04672721914174861 0.0010341455962512703 -4.467579352440687e-05" rpy="0 0 0"/>
-    <mass value="0.7388320393848112"/>
-    <inertia ixx="0.000723" iyy="0.000493" izz="0.000757" ixy="5e-06" iyz="-1e-06" ixz="-1e-06"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.123077 -0.0 -1.173577" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_6_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="-0.045 0 0"/><geometry><box size="0.135 0.065 0.075"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="0.123077 -0.0 -1.173577" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/link_6_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="right_finger_link_1">
-  <inertial>
-    <origin xyz="-0.0246083952902236 0.013356716518430598 -0.007375101628988023" rpy="0 0 0"/>
-    <mass value="0.16542337365750662"/>
-    <inertia ixx="4.2e-05" iyy="6.6e-05" izz="8.3e-05" ixy="1.6e-05" iyz="9e-06" ixz="-1.6e-05"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.180677 0.0038 -1.187077" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/right_finger_link_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="-0.023 0.013 -0.007"/><geometry><box size="0.05 0.012 0.02"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="0.180677 0.0038 -1.187077" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/right_finger_link_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="left_finger_link_1">
-  <inertial>
-    <origin xyz="-0.024608395290223434 -0.013356716294173003 0.007375804549700549" rpy="0 0 0"/>
-    <mass value="0.16542337365750778"/>
-    <inertia ixx="4.2e-05" iyy="6.6e-05" izz="8.3e-05" ixy="-1.6e-05" iyz="9e-06" ixz="1.6e-05"/>
-  </inertial>
-  <visual>
-    <origin xyz="0.180677 -0.0038 -1.160077" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/left_finger_link_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <xacro:unless value="${mesh_collisions}"><collision><origin xyz="-0.023 -0.013 0.007"/><geometry><box size="0.05 0.012 0.02"/></geometry></collision></xacro:unless><xacro:if value="${mesh_collisions}"><collision>
-    <origin xyz="0.180677 -0.0038 -1.160077" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="${mesh_prefix}/left_finger_link_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-  </xacro:if></link>
-
-<link name="gripper_tcp"/>
-<joint name="joint_1" type="revolute">
-  <!-- Dónde queda el hijo respecto al padre (aquí 3.7 cm más arriba). -->
-  <origin xyz="0.0 0.0 0.037" rpy="0 0 0"/>
-  <parent link="arm_base_link_1"/>
-  <child link="link_1_1"/>
-  <!-- Eje de giro (0 0 1 = Z). -->
-  <axis xyz="0.0 0.0 1.0"/>
-  <!-- Amortiguación y roce de la articulación (solo para la simulación). -->
-  <dynamics damping="0.08" friction="0.02"/>
-  <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/></joint>
-
-<joint name="joint_2" type="revolute">
-  <origin xyz="-0.065 0.0 0.056" rpy="0 0 0"/>
-  <parent link="link_1_1"/>
-  <child link="link_2_1"/>
-  <axis xyz="-1.0 0.0 0.0"/>
-  <dynamics damping="0.12" friction="0.03"/>
-  <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/></joint>
-
-<joint name="joint_3" type="revolute">
-  <origin xyz="-0.001077 0.0 0.350077" rpy="0 0 0"/>
-  <parent link="link_2_1"/>
-  <child link="link_3_1"/>
-  <axis xyz="1.0 0.0 0.0"/>
-  <dynamics damping="0.12" friction="0.03"/>
-  <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/></joint>
-
-<joint name="joint_4" type="revolute">
-  <origin xyz="0.026 0.0 0.3235" rpy="0 0 0"/>
-  <parent link="link_3_1"/>
-  <child link="link_4_1"/>
-  <axis xyz="-1.0 0.0 0.0"/>
-  <dynamics damping="0.06" friction="0.02"/>
-  <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/></joint>
-
-<joint name="joint_5" type="revolute">
-  <origin xyz="-0.0495 0.0 0.04" rpy="0 0 0"/>
-  <parent link="link_4_1"/>
-  <child link="link_5_1"/>
-  <axis xyz="0.0 0.0 1.0"/>
-  <dynamics damping="0.05" friction="0.02"/>
-  <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/></joint>
-
-<joint name="joint_6" type="revolute">
-  <origin xyz="-0.041 0.0 0.0495" rpy="0 0 0"/>
-  <parent link="link_5_1"/>
-  <child link="link_6_1"/>
-  <axis xyz="-1.0 0.0 0.0"/>
-  <dynamics damping="0.05" friction="0.02"/>
-  <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/></joint>
-
-<joint name="right_finger_joint" type="prismatic">
-  <origin xyz="-0.0576 -0.0038 0.0135" rpy="0 0 0"/>
-  <parent link="link_6_1"/>
-  <child link="right_finger_link_1"/>
-  <axis xyz="0.0 1.0 0.0"/>
-  <limit upper="0.016" lower="-0.007" effort="30" velocity="0.05"/>
-</joint>
-
-<joint name="left_finger_joint" type="prismatic">
-  <origin xyz="-0.0576 0.0038 -0.0135" rpy="0 0 0"/>
-  <parent link="link_6_1"/>
-  <child link="left_finger_link_1"/>
-  <axis xyz="0.0 1.0 0.0"/>
-  <mimic joint="right_finger_joint" multiplier="-1.0" offset="0.0"/><limit upper="0.007" lower="-0.016" effort="30" velocity="0.05"/>
-</joint>
-
-<joint name="gripper_tcp_joint" type="fixed">
-  <origin xyz="-0.102 0.0 0.0" rpy="0 0 0"/>
-  <parent link="link_6_1"/>
-  <child link="gripper_tcp"/>
-</joint>
-
-
-<gazebo reference="arm_base_link_1"><selfCollide>false</selfCollide></gazebo><gazebo reference="link_1_1"><selfCollide>false</selfCollide></gazebo><gazebo reference="link_2_1"><selfCollide>false</selfCollide></gazebo><gazebo reference="link_3_1"><selfCollide>false</selfCollide></gazebo><gazebo reference="link_4_1"><selfCollide>false</selfCollide></gazebo><gazebo reference="link_5_1"><selfCollide>false</selfCollide></gazebo><gazebo reference="link_6_1"><selfCollide>false</selfCollide></gazebo><gazebo reference="right_finger_link_1"><selfCollide>false</selfCollide></gazebo><gazebo reference="left_finger_link_1"><selfCollide>false</selfCollide></gazebo></xacro:macro>
+  <xacro:macro name="eb300_arm" params="mesh_prefix:='package://martha_arm/meshes' mesh_collisions:=false">
+    <!-- Se mantiene mesh_collisions como parametro heredado por compatibilidad; las colisiones ahora usan solo primitivas. -->
+    <!-- Las geometrías siguientes son aproximaciones iniciales; verificar y afinar frente a STL en Gazebo. -->
+    <!-- Los STL originales usan milimetros; se conserva scale 0.001. -->
+    <material name="silver">
+      <color rgba="0.75 0.75 0.78 1"/>
+    </material>
+    <link name="arm_base_link_1">
+      <inertial>
+        <origin xyz="4.338687172847182e-05 -0.00010909262325140833 0.017247921655867693" rpy="0 0 0"/>
+        <mass value="0.37739906837185044"/>
+        <inertia ixx="0.000595" iyy="0.000597" izz="0.001109" ixy="-1e-06" iyz="1e-06" ixz="-0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.0075 -0.0 -0.3175" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/arm_base_link_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Base cilindrica original. -->
+      <collision name="base_cuerpo">
+        <origin xyz="0 0 0.025" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.05" length="0.07"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="link_1_1">
+      <inertial>
+        <origin xyz="-0.01769557352244753 -9.412818198760994e-06 0.06365159642189822" rpy="0 0 0"/>
+        <mass value="0.4335455797309874"/>
+        <inertia ixx="0.00108" iyy="0.001163" izz="0.00117" ixy="-0.0" iyz="0.0" ixz="-6e-05"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.0075 -0.0 -0.3545" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/link_1_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Cuerpo original del hombro. -->
+      <collision name="hombro_cuerpo">
+        <origin xyz="-0.02 0 0.03" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.055" length="0.085"/>
+        </geometry>
+      </collision>
+      <!-- Carcasa en el centro de joint_2. -->
+      <collision name="hombro_articulacion">
+        <origin xyz="-0.065 0 0.056" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.045"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="link_2_1">
+      <inertial>
+        <origin xyz="-0.06117091356976916 3.782915765605535e-05 0.1745118338257844" rpy="0 0 0"/>
+        <mass value="1.337954288424347"/>
+        <inertia ixx="0.026593" iyy="0.026587" izz="0.003039" ixy="-1e-06" iyz="9e-06" ixz="4e-05"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.0575 -0.0 -0.4105" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/link_2_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Eslabon superior - eje desplazado fuera del centro, longitud hasta proximidad de joint_2 y joint_3. -->
+      <collision name="brazo_superior_cuerpo">
+        <origin xyz="-0.06 0 0.175" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.046" length="0.34"/>
+        </geometry>
+      </collision>
+      <!-- Carcasa del codo (joint_3) en coordenadas de link_2_1. -->
+      <collision name="codo_articulacion">
+        <origin xyz="-0.001077 0 0.350077" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.045"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="link_3_1">
+      <inertial>
+        <origin xyz="0.060349833319215604 -7.17139814212156e-06 0.14917664928098273" rpy="0 0 0"/>
+        <mass value="0.7555537404726129"/>
+        <inertia ixx="0.014049" iyy="0.014249" izz="0.001262" ixy="0.0" iyz="1e-06" ixz="-0.00134"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.058577 -0.0 -0.760577" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/link_3_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Eslabon inferior - eje desplazado fuera del centro, longitud hasta proximidad de joint_3 y joint_4. -->
+      <collision name="antebrazo_cuerpo">
+        <origin xyz="0.06 0 0.16175" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.044" length="0.31"/>
+        </geometry>
+      </collision>
+      <!-- Carcasa de joint_4 en coordenadas de link_3_1. -->
+      <collision name="muneca_articulacion">
+        <origin xyz="0.026 0 0.3235" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.042"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="link_4_1">
+      <inertial>
+        <origin xyz="-0.03758399899740222 -2.5185582457390994e-05 -0.009574293539618806" rpy="0 0 0"/>
+        <mass value="0.22273736647673667"/>
+        <inertia ixx="0.000311" iyy="0.000343" izz="0.000316" ixy="-0.0" iyz="-0.0" ixz="-2.6e-05"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.032577 -0.0 -1.084077" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/link_4_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Cuerpo original de la muneca. -->
+      <collision name="muneca_1_cuerpo">
+        <origin xyz="-0.02 0 0.015" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.035" length="0.09"/>
+        </geometry>
+      </collision>
+      <!-- Carcasa de joint_5. -->
+      <collision name="muneca_1_articulacion">
+        <origin xyz="-0.0495 0 0.04" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.034"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="link_5_1">
+      <inertial>
+        <origin xyz="0.009039834811220046 -2.5441028107860334e-05 0.03771079682664524" rpy="0 0 0"/>
+        <mass value="0.22513890610008"/>
+        <inertia ixx="0.000319" iyy="0.000351" izz="0.000319" ixy="0.0" iyz="0.0" ixz="-2.4e-05"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.082077 -0.0 -1.124077" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/link_5_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Cuerpo original de la muneca. -->
+      <collision name="muneca_2_cuerpo">
+        <origin xyz="-0.02 0 0.025" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.035" length="0.075"/>
+        </geometry>
+      </collision>
+      <!-- Carcasa de joint_6. -->
+      <collision name="muneca_2_articulacion">
+        <origin xyz="-0.041 0 0.0495" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.034"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="link_6_1">
+      <inertial>
+        <origin xyz="-0.04672721914174861 0.0010341455962512703 -4.467579352440687e-05" rpy="0 0 0"/>
+        <mass value="0.7388320393848112"/>
+        <inertia ixx="0.000723" iyy="0.000493" izz="0.000757" ixy="5e-06" iyz="-1e-06" ixz="-1e-06"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.123077 -0.0 -1.173577" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/link_6_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Caja de la garra original. -->
+      <!-- Cuerpo de la garra - geometría de prueba sin invadir los dedos -->
+      <collision name="garra_cuerpo">
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+              <box size="0.050 0.055 0.055"/>
+          </geometry>
+      </collision>
+    </link>
+    <link name="right_finger_link_1">
+      <inertial>
+        <origin xyz="-0.0246083952902236 0.013356716518430598 -0.007375101628988023" rpy="0 0 0"/>
+        <mass value="0.16542337365750662"/>
+        <inertia ixx="4.2e-05" iyy="6.6e-05" izz="8.3e-05" ixy="1.6e-05" iyz="9e-06" ixz="-1.6e-05"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.180677 0.0038 -1.187077" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/right_finger_link_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Dedo derecho original. -->
+      <collision name="dedo_derecho">
+        <origin xyz="-0.023 0.013 -0.007" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.05 0.012 0.02"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="left_finger_link_1">
+      <inertial>
+        <origin xyz="-0.024608395290223434 -0.013356716294173003 0.007375804549700549" rpy="0 0 0"/>
+        <mass value="0.16542337365750778"/>
+        <inertia ixx="4.2e-05" iyy="6.6e-05" izz="8.3e-05" ixy="-1.6e-05" iyz="9e-06" ixz="1.6e-05"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.180677 -0.0038 -1.160077" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_prefix}/left_finger_link_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="silver"/>
+      </visual>
+      <!-- Dedo izquierdo original. -->
+      <collision name="dedo_izquierdo">
+        <origin xyz="-0.023 -0.013 0.007" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.05 0.012 0.02"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="gripper_tcp"/>
+    <joint name="joint_1" type="revolute">
+      <!-- Dónde queda el hijo respecto al padre (aquí 3.7 cm más arriba). -->
+      <origin xyz="0.0 0.0 0.037" rpy="0 0 0"/>
+      <parent link="arm_base_link_1"/>
+      <child link="link_1_1"/>
+      <!-- Eje de giro (0 0 1 = Z). -->
+      <axis xyz="0.0 0.0 1.0"/>
+      <!-- Amortiguación y roce de la articulación (solo para la simulación). -->
+      <dynamics damping="0.08" friction="0.02"/>
+      <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/>
+    </joint>
+    <joint name="joint_2" type="revolute">
+      <origin xyz="-0.065 0.0 0.056" rpy="0 0 0"/>
+      <parent link="link_1_1"/>
+      <child link="link_2_1"/>
+      <axis xyz="-1.0 0.0 0.0"/>
+      <dynamics damping="0.12" friction="0.03"/>
+      <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/>
+    </joint>
+    <joint name="joint_3" type="revolute">
+      <origin xyz="-0.001077 0.0 0.350077" rpy="0 0 0"/>
+      <parent link="link_2_1"/>
+      <child link="link_3_1"/>
+      <axis xyz="1.0 0.0 0.0"/>
+      <dynamics damping="0.12" friction="0.03"/>
+      <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/>
+    </joint>
+    <joint name="joint_4" type="revolute">
+      <origin xyz="0.026 0.0 0.3235" rpy="0 0 0"/>
+      <parent link="link_3_1"/>
+      <child link="link_4_1"/>
+      <axis xyz="-1.0 0.0 0.0"/>
+      <dynamics damping="0.06" friction="0.02"/>
+      <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/>
+    </joint>
+    <joint name="joint_5" type="revolute">
+      <origin xyz="-0.0495 0.0 0.04" rpy="0 0 0"/>
+      <parent link="link_4_1"/>
+      <child link="link_5_1"/>
+      <axis xyz="0.0 0.0 1.0"/>
+      <dynamics damping="0.05" friction="0.02"/>
+      <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/>
+    </joint>
+    <joint name="joint_6" type="revolute">
+      <origin xyz="-0.041 0.0 0.0495" rpy="0 0 0"/>
+      <parent link="link_5_1"/>
+      <child link="link_6_1"/>
+      <axis xyz="-1.0 0.0 0.0"/>
+      <dynamics damping="0.05" friction="0.02"/>
+      <limit lower="-3.141592653589793" upper="3.141592653589793" effort="20.0" velocity="1.0"/>
+    </joint>
+    <joint name="right_finger_joint" type="prismatic">
+      <origin xyz="-0.0576 -0.0038 0.0135" rpy="0 0 0"/>
+      <parent link="link_6_1"/>
+      <child link="right_finger_link_1"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <limit
+        lower="-0.0025"
+        upper="0.016"
+        effort="30"
+        velocity="0.05"/>
+    </joint>
+    <joint name="left_finger_joint" type="prismatic">
+      <origin xyz="-0.0576 0.0038 -0.0135" rpy="0 0 0"/>
+      <parent link="link_6_1"/>
+      <child link="left_finger_link_1"/>
+      <axis xyz="0.0 1.0 0.0"/>
+      <mimic joint="right_finger_joint" multiplier="-1.0" offset="0.0"/>
+      <limit
+        lower="-0.016"
+        upper="0.0025"
+        effort="30"
+        velocity="0.05"/>
+    </joint>
+    <joint name="gripper_tcp_joint" type="fixed">
+      <origin xyz="-0.102 0.0 0.0" rpy="0 0 0"/>
+      <parent link="link_6_1"/>
+      <child link="gripper_tcp"/>
+    </joint>
+    <!-- Base del brazo -->
+    <gazebo reference="arm_base_link_1">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <!-- Articulación 1 -->
+    <gazebo reference="link_1_1">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <!-- Articulación 2 -->
+    <gazebo reference="link_2_1">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <!-- Articulación 3 -->
+    <gazebo reference="link_3_1">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <!-- Articulación 4 -->
+    <gazebo reference="link_4_1">
+      <selfCollide>false</selfCollide>
+    </gazebo>
+    <!-- Articulación 5 -->
+    <gazebo reference="link_5_1">
+      <selfCollide>false</selfCollide>
+    </gazebo>
+    <!-- Articulación 6 -->
+    <gazebo reference="link_6_1">
+      <selfCollide>false</selfCollide>
+    </gazebo>
+    <!-- Dedo derecho de la garra -->
+    <gazebo reference="right_finger_link_1">
+      <selfCollide>false</selfCollide>
+    </gazebo>
+    <!-- Dedo izquierdo de la garra -->
+    <gazebo reference="left_finger_link_1">
+      <selfCollide>false</selfCollide>
+    </gazebo>
+  </xacro:macro>
 </robot>

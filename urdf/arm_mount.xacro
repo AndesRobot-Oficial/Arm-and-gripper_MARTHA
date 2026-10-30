@@ -1,59 +1,140 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <!-- Ascensor y montaje de EB300 a MARTHA. Columna centrada en el eje de la base. -->
-  <xacro:macro name="elevator_box" params="name sx sy sz mass">
-      <link name="${name}">
-        <visual>
-          <geometry>
-            <box size="${sx} ${sy} ${sz}"/>
-          </geometry>
-          <material name="grey"/>
-        </visual>
-        <collision>
-          <geometry>
-            <box size="${sx} ${sy} ${sz}"/>
-          </geometry>
-        </collision>
-        <inertial>
-          <mass value="${mass}"/>
-          <inertia ixx="${mass*(sy*sy+sz*sz)/12}" iyy="${mass*(sx*sx+sz*sz)/12}" izz="${mass*(sx*sx+sy*sy)/12}" ixy="0" ixz="0" iyz="0"/>
-        </inertial>
-      </link>
-    </xacro:macro>
-    <xacro:macro name="martha_elevator_mount" params="parent_link:='base_link' column_x:=0.0 column_y:=0.0 column_length:=1.65 chassis_top:=0.1375">
-    <!-- Massas del elevador estimadas del modelo fuente; geometria de montaje propuesta, validar con CAD. -->
-    <!-- Cableado y actuador del elevador NO modelados; el par prismatico es solo simulacion. -->
-    <xacro:elevator_box name="milo_elevator_column" sx="0.05" sy="0.06" sz="${column_length}" mass="9.0"/>
-    <xacro:elevator_box name="milo_lift_carriage" sx="0.07" sy="0.09" sz="0.12" mass="1.5"/>
-    <xacro:elevator_box name="milo_lift_bracket" sx="0.17" sy="0.05" sz="0.055" mass="2.0"/>
-    <xacro:elevator_box name="milo_lift_platform" sx="0.22" sy="0.16" sz="0.012" mass="2.0"/>
-    <joint name="milo_column_mount" type="fixed">
+
+  <!-- Montaje del elevador y del brazo EB300 sobre MARTHA.
+       Geometria simplificada; dimensiones y masas deben validarse con CAD.
+       El brazo se une a la plataforma movil, no a la columna fija. -->
+
+  <xacro:macro name="martha_elevator_box" params="name sx sy sz mass">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${sx} ${sy} ${sz}"/>
+        </geometry>
+        <material name="grey"/>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="${sx} ${sy} ${sz}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${mass}"/>
+        <inertia
+          ixx="${mass * (sy*sy + sz*sz) / 12.0}"
+          ixy="0" ixz="0"
+          iyy="${mass * (sx*sx + sz*sz) / 12.0}"
+          iyz="0"
+          izz="${mass * (sx*sx + sy*sy) / 12.0}"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="martha_elevator_mount"
+               params="parent_link:='base_link'
+                       column_x:=0.0 column_y:=0.0
+                       column_length:=1.65 chassis_top:=0.1375
+                       platform_length:=0.30 extra_clearance:=0.03
+                       arm_yaw:=3.141592653589793
+                       balance_factor:=1.0">
+
+    <!-- Posiciones locales originales del elevador - se preserva la guia. -->
+    <xacro:property name="carriage_offset_x" value="0.080"/>
+    <xacro:property name="bracket_offset_x" value="0.065"/>
+
+    <!-- Plataforma original - largo 0.22 m, distancia al soporte 0.04 m.
+         Al alargarla se desplaza su centro la mitad del aumento de largo;
+         extra_clearance suma 3 cm de espacio libre hacia la columna. -->
+    <xacro:property name="platform_offset_x"
+                    value="${0.040 + (platform_length - 0.22) / 2.0 + extra_clearance}"/>
+    <xacro:property name="platform_offset_from_column"
+                    value="${carriage_offset_x + bracket_offset_x + platform_offset_x}"/>
+
+    <!-- Masa de la plataforma proporcional al largo (misma seccion y densidad).
+         Valor estimado, NO medicion del equipo fisico. -->
+    <xacro:property name="platform_mass" value="${2.0 * platform_length / 0.22}"/>
+
+    <!-- Datos de masa/centro de masa del EB300 + garra a joint_1..6 = 0,
+         calculados a partir de los elementos <inertial> de arm.urdf.xacro.
+         Recalcular si cambian masas, posiciones o geometria del brazo. -->
+    <xacro:property name="arm_mass" value="4.42200773627644"/>
+    <xacro:property name="arm_com_x" value="-0.09444149239657243"/>
+    <xacro:property name="arm_com_y" value="0.00017020896688907"/>
+    <xacro:property name="arm_com_rot_x"
+                    value="${arm_com_x * cos(arm_yaw) - arm_com_y * sin(arm_yaw)}"/>
+
+    <!-- Centro de masa longitudinal del modulo superior relativo a la columna.
+         Componentes - columna 9 kg, carro 1.5 kg, soporte 2 kg, plataforma
+         con masa escalada, EB300 + garra en posicion de cero articulaciones.
+         No incluye chasis, ruedas, carga util ni movimiento del manipulador. -->
+    <xacro:property name="module_mass"
+                    value="${9.0 + 1.5 + 2.0 + platform_mass + arm_mass}"/>
+    <xacro:property name="module_com_x_from_column"
+                    value="${(1.5 * carriage_offset_x
+                            + 2.0 * (carriage_offset_x + bracket_offset_x)
+                            + platform_mass * platform_offset_from_column
+                            + arm_mass * (platform_offset_from_column + arm_com_rot_x))
+                            / module_mass}"/>
+
+    <!-- column_x es la referencia nominal sobre base_link.
+         balance_factor=1 aproxima el COM superior a column_x (pose inicial);
+         balance_factor=0 deja el centro de la columna en column_x.
+         Valor intermedio permite limitar desplazamiento de la torre segun el chasis.
+         No garantiza estabilidad global ni que la columna permanezca soportada. -->
+    <xacro:property name="column_mount_x"
+                    value="${column_x - balance_factor * module_com_x_from_column}"/>
+
+    <!-- Componentes exclusivos de MARTHA - sin nombres heredados de MILO. -->
+    <xacro:martha_elevator_box name="martha_elevator_column"
+                               sx="0.05" sy="0.06" sz="${column_length}"
+                               mass="9.0"/>
+    <xacro:martha_elevator_box name="martha_lift_carriage"
+                               sx="0.07" sy="0.09" sz="0.12"
+                               mass="1.5"/>
+    <xacro:martha_elevator_box name="martha_lift_bracket"
+                               sx="0.17" sy="0.05" sz="0.055"
+                               mass="2.0"/>
+    <xacro:martha_elevator_box name="martha_lift_platform"
+                               sx="${platform_length}" sy="0.16" sz="0.012"
+                               mass="${platform_mass}"/>
+
+    <joint name="martha_column_mount" type="fixed">
       <parent link="${parent_link}"/>
-      <child link="milo_elevator_column"/>
-      <origin xyz="${column_x} ${column_y} ${chassis_top + 0.005 + column_length/2}" rpy="0 0 0"/>
+      <child link="martha_elevator_column"/>
+      <origin xyz="${column_mount_x} ${column_y} ${chassis_top + 0.005 + column_length / 2.0}"
+              rpy="0 0 0"/>
     </joint>
+
+    <!-- Nombre conservado por compatibilidad con controladores existentes. -->
     <joint name="vertical_lift_joint" type="prismatic">
-      <parent link="milo_elevator_column"/>
-      <child link="milo_lift_carriage"/>
-      <origin xyz="0.080 0 ${-column_length/2 + 0.15}" rpy="0 0 0"/>
+      <parent link="martha_elevator_column"/>
+      <child link="martha_lift_carriage"/>
+      <origin xyz="${carriage_offset_x} 0 ${-column_length / 2.0 + 0.15}"
+              rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="0" upper="1.43" effort="500" velocity="0.15"/>
       <dynamics damping="8" friction="3"/>
     </joint>
-    <joint name="milo_carriage_to_bracket" type="fixed">
-      <parent link="milo_lift_carriage"/>
-      <child link="milo_lift_bracket"/>
-      <origin xyz="0.065 0 0" rpy="0 0 0"/>
+
+    <joint name="martha_carriage_to_bracket" type="fixed">
+      <parent link="martha_lift_carriage"/>
+      <child link="martha_lift_bracket"/>
+      <origin xyz="${bracket_offset_x} 0 0" rpy="0 0 0"/>
     </joint>
-    <joint name="milo_bracket_to_platform" type="fixed">
-      <parent link="milo_lift_bracket"/>
-      <child link="milo_lift_platform"/>
-      <origin xyz="0.040 0 0.0335" rpy="0 0 0"/>
+
+    <joint name="martha_bracket_to_platform" type="fixed">
+      <parent link="martha_lift_bracket"/>
+      <child link="martha_lift_platform"/>
+      <origin xyz="${platform_offset_x} 0 0.0335" rpy="0 0 0"/>
     </joint>
-    <joint name="milo_platform_to_arm" type="fixed">
-      <parent link="milo_lift_platform"/>
+
+    <!-- Giro inicial configurable - pi = 180 grados, 0 = original. -->
+    <joint name="martha_platform_to_arm" type="fixed">
+      <parent link="martha_lift_platform"/>
       <child link="arm_base_link_1"/>
-      <origin xyz="0 0 0.006" rpy="0 0 0"/>
+      <origin xyz="0 0 0.006" rpy="0 0 ${arm_yaw}"/>
     </joint>
+
   </xacro:macro>
 </robot>
