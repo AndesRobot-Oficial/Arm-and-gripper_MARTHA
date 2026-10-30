@@ -1,0 +1,43 @@
+
+<?xml version="1.0"?>
+<package format="3">
+  <name>martha_nav</name>
+  <version>0.1.0</version>
+  <description>
+    Simulacion de MARTHA con ascensor,
+    brazo EB300 y garra en Gazebo Classic.
+  </description>
+
+  <maintainer email="tu_correo@ejemplo.com">
+    Equipo RoboCup 2027
+  </maintainer>
+
+  <!-- Sustituir por la licencia real del repositorio -->
+  <license>TODO</license>
+
+  <!-- Sistema de construccion -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Lanzamiento y descripcion -->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+
+  <!-- Gazebo Classic -->
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>gazebo_ros2_control</exec_depend>
+
+  <!-- Control ROS 2 -->
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>gripper_controllers</exec_depend>
+  <exec_depend>mecanum_drive_controller</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <gazebo_ros gazebo_model_path="${prefix}/.."/>
+  </export>
+</package>
