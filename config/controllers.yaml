@@ -1,53 +1,101 @@
-# ros2_control for the mecanum drive in Gazebo. No namespaces, and this controller owns
-# odom -> base_link because there is no EKF here.
+# MARTHA + elevador + EB300 + gripper
+# ROS 2 Humble | gazebo_ros2_control | Gazebo Classic
+# Referencia URDF  martha_nav/urdf/martha.urdf.xacro
+# Requiere drive=mecanum y with_arm=true para activar todos los controladores.
+# El launch debe cargar el archivo en el plugin gazebo_ros2_control y activar los
+# controladores mediante controller_manager/spawner (declararlos no los inicia).
+
 controller_manager:
   ros__parameters:
-    update_rate: 100
+    update_rate: 100  # Hz, frecuencia de control en simulacion
+    use_sim_time: true
 
+    # Estados articulares para robot_state_publisher, RViz y MoveIt 2.
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
+    # Base movil MARTHA, cuatro ruedas mecanum.
     mecanum_drive_controller:
       type: mecanum_drive_controller/MecanumDriveController
 
+    # Manipulador EB300, seis grados de libertad.
     arm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
-    gripper_controller:
+
+    # Ascensor de un grado de libertad (traslacion vertical).
+    lift_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
+    # Pinza paralela con un actuador y un dedo acoplado mediante mimic.
+    gripper_controller:
+      type: position_controllers/GripperActionController
+
+
+# -----------------------------------------------------------------------------
+# 1. MARTHA - traccion mecanum (cinematica de la base actual)
+# -----------------------------------------------------------------------------
 mecanum_drive_controller:
   ros__parameters:
-    reference_timeout: 0.5
+    reference_timeout: 0.5  # s
+    use_stamped_vel: true
+
     front_left_wheel_command_joint_name: base_front_left_wheel_joint
     front_right_wheel_command_joint_name: base_front_right_wheel_joint
     rear_left_wheel_command_joint_name: base_rear_left_wheel_joint
     rear_right_wheel_command_joint_name: base_rear_right_wheel_joint
 
     kinematics:
-      base_frame_offset:
-        x: 0.0
-        y: 0.0
-        theta: 0.0
-      wheels_radius: 0.075
-      # lx + ly with the wheels at x = 0.20 and y = 0.175, inside the contact shell
-      # so a wall touches the shell first.
-      sum_of_robot_center_projection_on_X_Y_axis: 0.375
+      base_frame_offset: {x: 0.0, y: 0.0, theta: 0.0}
+      wheels_radius: 0.075  # m, radio nominal; verificar con los rodillos en Gazebo
+      # URDF actual - abs(wheel_pos_x) + abs(wheel_pos_y) = 0.210 + 0.175 m
+      sum_of_robot_center_projection_on_X_Y_axis: 0.385
 
     base_frame_id: base_link
     odom_frame_id: odom
-    enable_odom_tf: true
+    enable_odom_tf: true  # unico emisor de odom -> base_link; no lanzar EKF con TF
+
+    # Valores iniciales del ejemplo, no covarianzas medidas experimentalmente.
     pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.001]
     twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.001]
 
+
+# -----------------------------------------------------------------------------
+# 2. EB300 - trayectorias de las seis articulaciones
+# -----------------------------------------------------------------------------
 arm_controller:
   ros__parameters:
-    joints: [vertical_lift_joint, joint_1, joint_2, joint_3, joint_4, joint_5, joint_6]
+    joints: [joint_1, joint_2, joint_3, joint_4, joint_5, joint_6]
     command_interfaces: [position]
     state_interfaces: [position, velocity]
-    allow_partial_joints_goal: true
 
+    state_publish_rate: 50.0  # Hz
+    action_monitor_rate: 20.0  # Hz
+    allow_partial_joints_goal: false
+
+
+# -----------------------------------------------------------------------------
+# 3. ASCENSOR - posicion vertical en metros
+# -----------------------------------------------------------------------------
+lift_controller:
+  ros__parameters:
+    joints: [vertical_lift_joint]
+    command_interfaces: [position]
+    state_interfaces: [position, velocity]
+
+    state_publish_rate: 25.0  # Hz
+    action_monitor_rate: 20.0  # Hz
+    allow_partial_joints_goal: false
+
+
+# -----------------------------------------------------------------------------
+# 4. PINZA - un actuador y un dedo espejo (mimic)
+# -----------------------------------------------------------------------------
 gripper_controller:
   ros__parameters:
-    joints: [right_finger_joint]
-    command_interfaces: [position]
-    state_interfaces: [position, velocity]
+    joint: right_finger_joint  # m, limite URDF -0.007 a +0.016
+    action_monitor_rate: 20.0  # Hz
+    goal_tolerance: 0.001  # m, tolerancia para considerar alcanzada la posicion
+    allow_stalling: false
+
+    # left_finger_joint NO se comanda: replica right_finger_joint con factor -1.
+    # Nota - el control de posicion NO garantiza la fuerza de agarre del objeto.

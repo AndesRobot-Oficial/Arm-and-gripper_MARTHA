@@ -18,22 +18,29 @@
 -->
 <robot name="martha" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <!-- drive: "mecanum" simulates the four wheels with their rollers through
+    <!-- drive - "mecanum" simulates the four wheels with their rollers through
          ros2_control (realistic, slower); "planar" replaces them with fixed wheels
          and gazebo_ros_planar_move (fast, no wheel dynamics). -->
     <xacro:arg name="drive" default="mecanum" />
     <xacro:arg name="controllers_file" default="$(find martha_nav)/config/controllers.yaml" />
     <xacro:arg name="lidar_samples" default="360" />
     <xacro:arg name="lidar_visualize" default="false" />
-    <!-- tower: the aluminium tower on the chassis (ROBOTS['martha_tower']). "false" is the
+    <!-- tower - the aluminium tower on the chassis (ROBOTS['martha_tower']). "false" is the
          robot ROBOTS['martha'] was trained for, without it. -->
     <xacro:arg name="tower" default="true" />
+    <!-- with_arm toggles the complete elevator + arm + gripper module. -->
+    <xacro:arg name="with_arm" default="false" />
+
+    <!-- Integracion, solo referencias a modulos del brazo. -->
+    <xacro:include filename="$(find martha_nav_robotic_arm)/urdf/arm.urdf.xacro" />
+    <xacro:include filename="$(find martha_nav_robotic_arm)/urdf/arm_mount.xacro" />
+    <xacro:include filename="$(find martha_nav_robotic_arm)/urdf/arm_control.xacro" />
 
     <material name="black"><color rgba="0 0 0 1" /></material>
     <material name="grey"><color rgba="0.7 0.7 0.7 1" /></material>
     <material name="red"><color rgba="1 0 0 1" /></material>
 
-    <!-- Chassis: a narrow front and rear plate around a wider centre plate. -->
+    <!-- Chassis - a narrow front and rear plate around a wider centre plate. -->
     <xacro:property name="base_front_x" value="0.160" />
     <xacro:property name="base_center_x" value="0.238" />
     <xacro:property name="base_rear_x" value="0.160" />
@@ -43,7 +50,7 @@
     <xacro:property name="height_0" value="0.125" />
     <xacro:property name="wheel_length" value="0.045" />
     <xacro:property name="wheel_radius" value="0.075" />
-    <!-- Mecanum wheel: a hub plus 12 rollers reaching 0.079 m from the axle. -->
+    <!-- Mecanum wheel - a hub plus 12 rollers reaching 0.079 m from the axle. -->
     <xacro:property name="hub_radius" value="0.045" />
     <xacro:property name="roller_radius" value="0.014" />
     <xacro:property name="roller_length" value="0.040" />
@@ -76,7 +83,7 @@
     <xacro:property name="profile_kg_per_m" value="0.5" />
     <xacro:property name="post_x" value="0.13" />
     <xacro:property name="post_y" value="0.11" />
-    <xacro:property name="post_height" value="0.565" />
+    <xacro:property name="post_height" value="0.265" />
     <xacro:property name="crossbar_fraction" value="0.4" />
     <!-- The level the LiDAR rests on, two profiles along x as long as the chassis, in line
          with the posts. -->
@@ -181,7 +188,25 @@
         <xacro:profile_bar name="tower_level_right" x="0" y="${-post_y}" z="${level_z}" sx="${level_x}" sy="${profile}" sz="${profile}" />
     </xacro:if>
 
-    <!-- Fixed wheels for the planar drive: not actuated, they only carry the chassis. -->
+    <!-- EB300 + elevador integrados, sin duplicar los enlaces de la plataforma. -->
+    <xacro:if value="$(arg with_arm)">
+        <xacro:eb300_arm mesh_prefix="package://martha_nav_robotic_arm/meshes"
+                         mesh_collisions="false" />
+        <xacro:martha_elevator_mount parent_link="base_link"
+                                     chassis_top="${height_0 + base_z/2}"
+                                     column_x="0.0" column_y="0.0" />
+    </xacro:if>
+
+    <!-- Ruedas, interfaz de velocidad para controlador mecanum existente. -->
+    <xacro:macro name="wheel_interface" params="joint">
+        <joint name="${joint}">
+            <command_interface name="velocity"/>
+            <state_interface name="velocity"/>
+            <state_interface name="position"/>
+        </joint>
+    </xacro:macro>
+
+    <!-- Fixed wheels for the planar drive - not actuated, they only carry the chassis. -->
     <xacro:macro name="fixed_wheel" params="name x y">
         <link name="${name}_wheel">
             <visual>
@@ -281,28 +306,6 @@
         <xacro:mecanum_wheel name="rear_left" x="${-wheel_pos_x}" y="${wheel_pos_y}" pitch="${pi - roller_angle}" />
         <xacro:mecanum_wheel name="rear_right" x="${-wheel_pos_x}" y="${-wheel_pos_y}" pitch="${roller_angle}" />
 
-        <ros2_control name="GazeboSystem" type="system">
-            <hardware>
-                <plugin>gazebo_ros2_control/GazeboSystem</plugin>
-            </hardware>
-            <xacro:macro name="wheel_interface" params="joint">
-                <joint name="${joint}">
-                    <command_interface name="velocity"/>
-                    <state_interface name="velocity"/>
-                    <state_interface name="position"/>
-                </joint>
-            </xacro:macro>
-            <xacro:wheel_interface joint="base_front_left_wheel_joint" />
-            <xacro:wheel_interface joint="base_front_right_wheel_joint" />
-            <xacro:wheel_interface joint="base_rear_left_wheel_joint" />
-            <xacro:wheel_interface joint="base_rear_right_wheel_joint" />
-        </ros2_control>
-
-        <gazebo>
-            <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-                <parameters>$(arg controllers_file)</parameters>
-            </plugin>
-        </gazebo>
     </xacro:if>
 
     <xacro:unless value="${'$(arg drive)' == 'mecanum'}">
@@ -319,7 +322,7 @@
             <update_rate>100</update_rate>
             <publish_rate>50</publish_rate>
             <publish_odom>true</publish_odom>
-            <!-- No EKF here: this plugin owns odom -> base_link. -->
+            <!-- No EKF here - this plugin owns odom -> base_link. -->
             <publish_odom_tf>true</publish_odom_tf>
             <odometry_frame>odom</odometry_frame>
             <robot_base_frame>base_link</robot_base_frame>
@@ -329,6 +332,29 @@
         </plugin>
         </gazebo>
     </xacro:unless>
+
+    <!-- Un unico ros2_control y un unico plugin Gazebo Classic para TODO el robot. -->
+    <xacro:if value="${'$(arg drive)' == 'mecanum' or '$(arg with_arm)' == 'true'}">
+        <ros2_control name="GazeboSystem" type="system">
+            <hardware>
+                <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+            </hardware>
+            <xacro:if value="${'$(arg drive)' == 'mecanum'}">
+                <xacro:wheel_interface joint="base_front_left_wheel_joint" />
+                <xacro:wheel_interface joint="base_front_right_wheel_joint" />
+                <xacro:wheel_interface joint="base_rear_left_wheel_joint" />
+                <xacro:wheel_interface joint="base_rear_right_wheel_joint" />
+            </xacro:if>
+            <xacro:if value="$(arg with_arm)">
+                <xacro:arm_ros2_control_interfaces />
+            </xacro:if>
+        </ros2_control>
+        <gazebo>
+            <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+                <parameters>$(arg controllers_file)</parameters>
+            </plugin>
+        </gazebo>
+    </xacro:if>
 
     <gazebo reference="base_link">
         <material>Gazebo/Grey</material>
