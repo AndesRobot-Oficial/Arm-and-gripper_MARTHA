@@ -70,7 +70,7 @@
         </geometry>
         <material name="silver"/>
       </visual>
-      <!-- Eslabon superior: eje desplazado fuera del centro, longitud hasta proximidad de joint_2 y joint_3. -->
+      <!-- Eslabon superior - eje desplazado fuera del centro, longitud hasta proximidad de joint_2 y joint_3. -->
       <collision name="brazo_superior_cuerpo">
         <origin xyz="-0.06 0 0.175" rpy="0 0 0"/>
         <geometry>
@@ -98,7 +98,7 @@
         </geometry>
         <material name="silver"/>
       </visual>
-      <!-- Eslabon inferior: eje desplazado fuera del centro, longitud hasta proximidad de joint_3 y joint_4. -->
+      <!-- Eslabon inferior - eje desplazado fuera del centro, longitud hasta proximidad de joint_3 y joint_4. -->
       <collision name="antebrazo_cuerpo">
         <origin xyz="0.06 0 0.16175" rpy="0 0 0"/>
         <geometry>
@@ -183,11 +183,12 @@
         <material name="silver"/>
       </visual>
       <!-- Caja de la garra original. -->
+      <!-- Cuerpo de la garra - geometría de prueba sin invadir los dedos -->
       <collision name="garra_cuerpo">
-        <origin xyz="-0.045 0 0" rpy="0 0 0"/>
-        <geometry>
-          <box size="0.135 0.065 0.075"/>
-        </geometry>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+              <box size="0.050 0.055 0.055"/>
+          </geometry>
       </collision>
     </link>
     <link name="right_finger_link_1">
@@ -289,7 +290,11 @@
       <parent link="link_6_1"/>
       <child link="right_finger_link_1"/>
       <axis xyz="0.0 1.0 0.0"/>
-      <limit upper="0.016" lower="-0.007" effort="30" velocity="0.05"/>
+      <limit
+        lower="-0.0025"
+        upper="0.016"
+        effort="30"
+        velocity="0.05"/>
     </joint>
     <joint name="left_finger_joint" type="prismatic">
       <origin xyz="-0.0576 0.0038 -0.0135" rpy="0 0 0"/>
@@ -297,7 +302,11 @@
       <child link="left_finger_link_1"/>
       <axis xyz="0.0 1.0 0.0"/>
       <mimic joint="right_finger_joint" multiplier="-1.0" offset="0.0"/>
-      <limit upper="0.007" lower="-0.016" effort="30" velocity="0.05"/>
+      <limit
+        lower="-0.016"
+        upper="0.0025"
+        effort="30"
+        velocity="0.05"/>
     </joint>
     <joint name="gripper_tcp_joint" type="fixed">
       <origin xyz="-0.102 0.0 0.0" rpy="0 0 0"/>
@@ -322,23 +331,23 @@
     </gazebo>
     <!-- Articulación 4 -->
     <gazebo reference="link_4_1">
-      <selfCollide>true</selfCollide>
+      <selfCollide>false</selfCollide>
     </gazebo>
     <!-- Articulación 5 -->
     <gazebo reference="link_5_1">
-      <selfCollide>true</selfCollide>
+      <selfCollide>false</selfCollide>
     </gazebo>
     <!-- Articulación 6 -->
     <gazebo reference="link_6_1">
-      <selfCollide>true</selfCollide>
+      <selfCollide>false</selfCollide>
     </gazebo>
     <!-- Dedo derecho de la garra -->
     <gazebo reference="right_finger_link_1">
-      <selfCollide>true</selfCollide>
+      <selfCollide>false</selfCollide>
     </gazebo>
     <!-- Dedo izquierdo de la garra -->
     <gazebo reference="left_finger_link_1">
-      <selfCollide>true</selfCollide>
+      <selfCollide>false</selfCollide>
     </gazebo>
   </xacro:macro>
 </robot>

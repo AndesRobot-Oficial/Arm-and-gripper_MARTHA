@@ -39,11 +39,11 @@
                        arm_yaw:=3.141592653589793
                        balance_factor:=1.0">
 
-    <!-- Posiciones locales originales del elevador: se preserva la guia. -->
+    <!-- Posiciones locales originales del elevador - se preserva la guia. -->
     <xacro:property name="carriage_offset_x" value="0.080"/>
     <xacro:property name="bracket_offset_x" value="0.065"/>
 
-    <!-- Plataforma original: largo 0.22 m, distancia al soporte 0.04 m.
+    <!-- Plataforma original - largo 0.22 m, distancia al soporte 0.04 m.
          Al alargarla se desplaza su centro la mitad del aumento de largo;
          extra_clearance suma 3 cm de espacio libre hacia la columna. -->
     <xacro:property name="platform_offset_x"
@@ -65,7 +65,7 @@
                     value="${arm_com_x * cos(arm_yaw) - arm_com_y * sin(arm_yaw)}"/>
 
     <!-- Centro de masa longitudinal del modulo superior relativo a la columna.
-         Componentes: columna 9 kg, carro 1.5 kg, soporte 2 kg, plataforma
+         Componentes - columna 9 kg, carro 1.5 kg, soporte 2 kg, plataforma
          con masa escalada, EB300 + garra en posicion de cero articulaciones.
          No incluye chasis, ruedas, carga util ni movimiento del manipulador. -->
     <xacro:property name="module_mass"
@@ -85,7 +85,7 @@
     <xacro:property name="column_mount_x"
                     value="${column_x - balance_factor * module_com_x_from_column}"/>
 
-    <!-- Componentes exclusivos de MARTHA: sin nombres heredados de MILO. -->
+    <!-- Componentes exclusivos de MARTHA - sin nombres heredados de MILO. -->
     <xacro:martha_elevator_box name="martha_elevator_column"
                                sx="0.05" sy="0.06" sz="${column_length}"
                                mass="9.0"/>
@@ -129,7 +129,7 @@
       <origin xyz="${platform_offset_x} 0 0.0335" rpy="0 0 0"/>
     </joint>
 
-    <!-- Giro inicial configurable: pi = 180 grados, 0 = original. -->
+    <!-- Giro inicial configurable - pi = 180 grados, 0 = original. -->
     <joint name="martha_platform_to_arm" type="fixed">
       <parent link="martha_lift_platform"/>
       <child link="arm_base_link_1"/>

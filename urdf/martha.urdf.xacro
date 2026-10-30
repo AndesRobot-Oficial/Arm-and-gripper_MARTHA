@@ -352,6 +352,7 @@
         <gazebo>
             <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
                 <parameters>$(arg controllers_file)</parameters>
+                <hold_joints>true</hold_joints>
             </plugin>
         </gazebo>
     </xacro:if>
